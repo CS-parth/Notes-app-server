@@ -71,6 +71,7 @@ const handleCreateUserRoute = async (req,res)=>{
                 res.status(401).json({Error : `${err.message}`});
         }
 } 
+
 // Authentication of the User
 const handleAuthuserRoute = async (req,res)=>{
         const errors = validationResult(req);
@@ -100,6 +101,7 @@ const handleAuthuserRoute = async (req,res)=>{
                 res.status(500).send("Internal Server Error Occurred");
         }       
 }
+
 // Get User details 
 const handleResourseRoute = async (req,res)=>{
         try{
@@ -111,6 +113,7 @@ const handleResourseRoute = async (req,res)=>{
                 res.status(500).send("Internal Server Error");
         }
 }
+
 router.post("/createUser",
         body('email')
         .trim()
@@ -137,7 +140,3 @@ router.post("/login",
 // authentication is done before providing the resources using the middlewares 
 router.post("/getResource",fetchUser,handleResourseRoute)
 module.exports = router;
-
-
-// t0ken
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRkMTNhNzBkZGRlYzllMTM3Y2EwYjVkIn0sImlhdCI6MTY5MTQzMzU4NH0.CHKDrnkG4Y_xpo4wwSLuEHSvSapaYadC5ydeHvTdRD
