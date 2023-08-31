@@ -10,6 +10,7 @@ const fetchUser = require('../Middleware/fetchuser');
 
 // Creating user
 const handleCreateUserRoute = async (req,res)=>{
+        let success = true;
         try{
                 const result = validationResult(req);
                 if(result.isEmpty()){
@@ -28,7 +29,8 @@ const handleCreateUserRoute = async (req,res)=>{
                                 } 
                         }
                         const authToken = jwt.sign(data,JWT_SECRET);
-                        res.json({authToken});
+                        success = true;
+                        res.json({success,authToken});
                 }else{
                         // Errors related to email validation,sanitaion,modifications will be logged here 
                         // alert(`Error: ${result.array().msg}`);
@@ -67,8 +69,9 @@ const handleCreateUserRoute = async (req,res)=>{
                 // res.status(200).join({Credentials : `${req.body}`});
         }catch(err){
                 // Errors related to users schema will be looged here 
-                // Duplication of the Email will automatically be cathed here 
-                res.status(401).json({Error : `${err.message}`});
+                // Duplication of the Email will automatically be cathed here
+                success = false; 
+                res.status(401).json({success, Error : `${err.message}`});
         }
 } 
 
@@ -76,18 +79,22 @@ const handleCreateUserRoute = async (req,res)=>{
 const handleAuthuserRoute = async (req,res)=>{
         const errors = validationResult(req);
         if(!errors.isEmpty()){
-                return res.status(400).json({errors: errors.array() });
+                let success = false;
+                return res.status(400).json({succerrors: errors.array() });
         }
-
+        
         const {email,password} = req.body;      
         try{
+                let success = false;
                 let user = await User.findOne({email});
                 if(!user){
-                        return res.status(401).json({error: "Please try to login with correct password"});
+                        success = false;
+                        return res.status(401).json({success,error: "Please try to login with correct password"});
                 }
                 const passwordCompare = await bcrypt.compare(password,user.password);
                 if(!passwordCompare){
-                        return res.status(401).json({error: "Please try to login with correct password"});
+                        success = false;
+                        return res.status(401).json({success, error: "Please try to login with correct password"});
                 }
                 const data = {
                         user:{
@@ -95,7 +102,8 @@ const handleAuthuserRoute = async (req,res)=>{
                         } 
                 }
                 const authToken = jwt.sign(data,JWT_SECRET);
-                res.json({authToken});
+                success = true;
+                res.json({success, authToken});
         }catch(err){
                 console.log(err.msg);
                 res.status(500).send("Internal Server Error Occurred");
